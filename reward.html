@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMint | Rewards</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dash-body">
+
+    <header class="dash-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-arrow-left" onclick="window.location.href='dashboard.html'" style="cursor: pointer;"></i>
+            <h2 style="color: #38bdf8;">Special Rewards</h2>
+        </div>
+    </header>
+
+    <div style="padding: 20px; margin-bottom: 80px;">
+        <div id="adminRewardsList">
+            <p style="text-align: center; color: #94a3b8; margin-top: 50px;">Checking for rewards...</p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="plans.html" class="nav-item"><i class="fas fa-gem"></i><span>Plans</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fas fa-wallet"></i><span>Deposit</span></a>
+        <a href="withdraw.html" class="nav-item"><i class="fas fa-money-bill-wave"></i><span>Withdraw</span></a>
+        <a href="team.html" class="nav-item"><i class="fas fa-users"></i><span>Team</span></a>
+    </nav>
+
+    <script type="module">
+        import { auth, db } from './config.js';
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Fetch rewards specifically sent to this user or global rewards
+                const rewardRef = ref(db, 'users/' + user.uid + '/rewards');
+                onValue(rewardRef, (snapshot) => {
+                    const list = document.getElementById('adminRewardsList');
+                    let html = '';
+                    if (snapshot.exists()) {
+                        snapshot.forEach((child) => {
+                            const data = child.val();
+                            html += `
+                            <div class="card secondary-card" style="border-top: 3px solid #fbbf24; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <h4 style="color: #fbbf24;"><i class="fas fa-gift"></i> ${data.title}</h4>
+                                    <span style="font-weight: bold; color: #22c55e;">+$${data.amount}</span>
+                                </div>
+                                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px;">${data.message}</p>
+                                <small style="color: #475569; font-size: 0.7rem;">Date: ${new Date(data.timestamp).toLocaleDateString()}</small>
+                            </div>`;
+                        });
+                        list.innerHTML = html;
+                    } else {
+                        list.innerHTML = '<p style="text-align: center; color: #94a3b8; margin-top: 50px;">No rewards yet. Stay active to earn!</p>';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

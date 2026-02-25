@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMint | Deposit</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="dash-body">
+
+    <header class="dash-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-arrow-left" onclick="window.location.href='dashboard.html'" style="cursor: pointer;"></i>
+            <h2 style="color: #38bdf8;">Deposit USDT</h2>
+        </div>
+    </header>
+
+    <div style="padding: 20px; margin-bottom: 100px;">
+        
+        <div style="background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <h4 style="color: #38bdf8; margin-bottom: 8px;"><i class="fas fa-info-circle"></i> Deposit Kaise Karein?</h4>
+            <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.6;">
+                1. Neeche diye gaye <b>USDT TRC20</b> address ko copy karein.<br>
+                2. Apne Crypto Wallet se is address par rakam bhejein.<br>
+                3. Payment ke baad transaction ka <b>Screenshot (Slip)</b> le lein.<br>
+                4. Screenshot upload karein aur Submit karein.<br>
+                <p style="color: #ef4444; margin-top: 8px; font-weight: bold;">
+                    ⚠️ Tawajjo: Address dehan se copy karein. Ghalat address par bheji gayi rakam zaya ho sakti hai.
+                </p>
+                <p style="color: #fbbf24; margin-top: 5px;">
+                    💡 Agar aapko koi step samajh nahi aa raha, toh turant <b>Customer Service Center</b> se rabta karein.
+                </p>
+            </div>
+        </div>
+
+        <div class="card secondary-card" style="text-align: center; border: 1px solid #334155;">
+            <p style="font-size: 0.8rem; color: #94a3b8;">Official USDT TRC20 Address</p>
+            <div style="background: #0f172a; padding: 12px; border-radius: 8px; margin: 10px 0; word-break: break-all; color: #38bdf8; font-family: monospace; font-size: 0.9rem; border: 1px solid #1e293b;">
+                TMUPJkctocmCyiZX43o7g7AP27rKfUpch6
+            </div>
+            <button class="main-btn" onclick="copyAddress()" style="width: auto; padding: 8px 20px; font-size: 0.8rem;">
+                <i class="fas fa-copy"></i> Copy Address
+            </button>
+        </div>
+
+        <div class="card secondary-card" style="margin-top: 20px;">
+            <div class="input-group">
+                <label>Deposit Amount (USDT)</label>
+                <input type="number" id="depAmount" placeholder="Min $20" style="width: 100%; padding: 12px; margin-top: 5px;">
+            </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Upload Payment Slip (Image)</label>
+                <input type="file" id="depSlip" accept="image/*" style="width: 100%; padding: 10px; margin-top: 5px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 5px;">
+            </div>
+
+            <button id="submitDeposit" class="main-btn" style="width: 100%; margin-top: 20px; background: #22c55e; border: none;">
+                <i class="fas fa-paper-plane"></i> Submit Deposit Request
+            </button>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="plans.html" class="nav-item"><i class="fas fa-gem"></i><span>Plans</span></a>
+        <a href="deposit.html" class="nav-item active"><i class="fas fa-wallet"></i><span>Deposit</span></a>
+        <a href="team.html" class="nav-item"><i class="fas fa-users"></i><span>Team</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script type="module">
+        import { auth, db, storage } from './config.js'; 
+        import { ref as dbRef, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        window.copyAddress = function() {
+            const addr = "TMUPJkctocmCyiZX43o7g7AP27rKfUpch6";
+            navigator.clipboard.writeText(addr);
+            // SweetAlert Check
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ toast: true, position: 'top', icon: 'success', title: 'Address Copied!', showConfirmButton: false, timer: 1500 });
+            } else {
+                alert("Address Copied!");
+            }
+        }
+
+        document.getElementById('submitDeposit').onclick = async () => {
+            const amount = document.getElementById('depAmount').value;
+            const slipFile = document.getElementById('depSlip').files[0];
+            const user = auth.currentUser;
+
+            if (!amount || amount < 20) {
+                return Swal.fire('Error', 'Minimum deposit is $20', 'error');
+            }
+            if (!slipFile) {
+                return Swal.fire('Error', 'Please upload payment slip image', 'error');
+            }
+
+            Swal.fire({ title: 'Submitting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+
+            try {
+                const storageRef = sRef(storage, `slips/${user.uid}/${Date.now()}_${slipFile.name}`);
+                const snapshot = await uploadBytes(storageRef, slipFile);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                const newReqRef = push(dbRef(db, 'depositRequests'));
+                await set(newReqRef, {
+                    uid: user.uid,
+                    amount: parseFloat(amount),
+                    slipUrl: downloadURL,
+                    status: 'pending',
+                    timestamp: Date.now()
+                });
+
+                Swal.fire('Success', 'Deposit request submitted!', 'success').then(() => {
+                    window.location.href = 'dashboard.html';
+                });
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', 'Upload failed. Check console.', 'error');
+            }
+        };
+    </script>
+</body>
+</html>

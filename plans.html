@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MetaMint | Investment Plans</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Screen fitting for plans */
+        body { overflow-x: hidden; width: 100%; touch-action: pan-y; }
+        .plans-container { padding: 20px; margin-bottom: 100px; width: 100%; }
+        .plan-card { width: 100%; max-width: 100%; }
+        /* Input focus zoom prevention */
+        input, button { font-size: 16px !important; }
+    </style>
+</head>
+<body class="dash-body">
+
+    <header class="dash-header">
+        <h2 style="color: #38bdf8;">Mining Plans</h2>
+        <div class="header-icons">
+            <span id="userWallet" style="font-size: 0.9rem; color: #fff; font-weight: 600;">$0.00</span>
+        </div>
+    </header>
+
+    <div class="plans-container">
+        
+        <div class="plan-card" id="plan1">
+            <div class="plan-info">
+                <h3>Level 1</h3>
+                <p>Daily 2.0% Profit</p>
+                <h2>$20.00</h2>
+            </div>
+            <button class="buy-btn" onclick="buyPlan(1, 20, 2.0)" id="btnPlan1">Activate Plan</button>
+            <button class="cancel-btn" onclick="cancelPlan(1)" id="cancelPlan1" style="display:none;">Cancel Plan (10% Fee)</button>
+        </div>
+
+        <div class="plan-card" id="plan2" style="margin-top: 20px;">
+            <div class="plan-info">
+                <h3>Level 2</h3>
+                <p>Daily 3.0% Profit</p>
+                <h2>$60.00</h2>
+            </div>
+            <button class="buy-btn" onclick="buyPlan(2, 60, 3.0)" id="btnPlan2">Activate Plan</button>
+            <button class="cancel-btn" onclick="cancelPlan(2)" id="cancelPlan2" style="display:none;">Cancel Plan (10% Fee)</button>
+        </div>
+
+        <div class="plan-card" id="plan3" style="margin-top: 20px;">
+            <div class="plan-info">
+                <h3>Level 3</h3>
+                <p>Daily 3.5% Profit</p>
+                <h2>$120.00</h2>
+            </div>
+            <button class="buy-btn" onclick="buyPlan(3, 120, 3.5)" id="btnPlan3">Activate Plan</button>
+            <button class="cancel-btn" onclick="cancelPlan(3)" id="cancelPlan3" style="display:none;">Cancel Plan (10% Fee)</button>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="plans.html" class="nav-item active"><i class="fas fa-gem"></i><span>Plans</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fas fa-wallet"></i><span>Deposit</span></a>
+        <a href="team.html" class="nav-item"><i class="fas fa-users"></i><span>Team</span></a>
+        <a href="profile.html" class="nav-item"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script type="module" src="plans.js"></script>
+</body>
+</html>

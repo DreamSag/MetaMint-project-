@@ -1,0 +1,93 @@
+/* --- MetaMint Master Stylesheet --- */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Poppins', sans-serif; 
+    /* Zoom aur scrolling behavior ko stabilize karne ke liye */
+    -webkit-tap-highlight-color: transparent;
+}
+
+body { 
+    background: #0f172a; 
+    color: white; 
+    min-height: 100vh; 
+    /* Horizontal scroll ko mukammal khatam karne ke liye */
+    overflow-x: hidden; 
+    padding-bottom: 80px; 
+    width: 100%;
+    /* Pinch-zoom ko browser level par rokne ke liye */
+    touch-action: pan-y; 
+}
+
+/* --- Auth (Login/Register) --- */
+.auth-body { display: flex; justify-content: center; align-items: center; padding: 20px; min-height: 100vh; }
+.auth-container { background: #1e293b; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+.logo-section { text-align: center; margin-bottom: 30px; }
+.logo-text { font-size: 2rem; font-weight: 600; }
+.logo-text span { color: #38bdf8; }
+.auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #334155; }
+.auth-tabs button { flex: 1; padding: 10px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1rem; }
+.auth-tabs button.active { color: #38bdf8; border-bottom: 2px solid #38bdf8; font-weight: 600; }
+
+/* Input focus par auto-zoom rokne ke liye font 16px rakha hai */
+.auth-form input { 
+    width: 100%; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border-radius: 10px; 
+    border: 1px solid #334155; 
+    background: #0f172a; 
+    color: white; 
+    outline: none; 
+    font-size: 16px; 
+}
+
+.main-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #38bdf8; color: #0f172a; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+.terms-box { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; margin-bottom: 15px; color: #94a3b8; }
+
+/* --- Dashboard Header --- */
+.dash-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e293b; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; position: sticky; top: 0; z-index: 100; width: 100%; }
+.user-info { display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #38bdf8; }
+.user-info h3 { font-size: 1rem; color: white; }
+.user-info p { font-size: 0.75rem; color: #94a3b8; }
+.header-icons { display: flex; gap: 18px; font-size: 1.1rem; color: #94a3b8; align-items: center; }
+.notif-btn { position: relative; cursor: pointer; }
+.badge { position: absolute; top: -5px; right: -5px; background: #f87171; color: white; font-size: 0.6rem; padding: 2px 5px; border-radius: 50%; }
+.logout-icon { color: #f87171; cursor: pointer; }
+
+/* --- Marquee & Cards --- */
+.marquee-container { background: #1e293b; padding: 8px 0; font-size: 0.8rem; color: #38bdf8; border-bottom: 1px solid #334155; margin-bottom: 15px; overflow: hidden; }
+.balance-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; width: 100%; }
+.card { padding: 20px; border-radius: 15px; text-align: left; overflow: hidden; }
+.main-card { background: linear-gradient(135deg, #38bdf8, #1d4ed8); }
+.secondary-card { background: #1e293b; border: 1px solid #334155; }
+.card p { font-size: 0.8rem; opacity: 0.8; margin-bottom: 5px; }
+.card h2 { font-size: 1.2rem; font-weight: 600; word-break: break-all; } /* Long amounts fix */
+
+/* --- Plans & Deposit Styles --- */
+.plan-card { background: #1e293b; border: 1px solid #334155; padding: 25px; border-radius: 20px; text-align: center; margin-bottom: 15px; }
+.plan-info h3 { color: #38bdf8; margin-bottom: 5px; }
+.plan-info h2 { font-size: 2rem; margin: 10px 0; }
+.buy-btn { margin-top: 15px; width: 100%; padding: 12px; border-radius: 10px; border: none; background: #38bdf8; color: #0f172a; font-weight: bold; cursor: pointer; }
+
+/* --- Bottom Navigation --- */
+.bottom-nav { 
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    background: #1e293b; 
+    display: flex; 
+    justify-content: space-around; 
+    padding: 10px 0; 
+    border-top: 1px solid #334155; 
+    z-index: 1000; 
+    padding-bottom: env(safe-area-inset-bottom);
+    /* Nav bar ko bhi zoom/selection se bachaya gaya hai */
+    user-select: none;
+}
+.nav-item { color: #94a3b8; text-decoration: none; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; gap: 4px; }
+.nav-item i { font-size: 1.2rem; }
+.nav-item.active { color: #38bdf8; }

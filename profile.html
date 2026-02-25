@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMint | Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dash-body">
+
+    <header class="dash-header">
+        <h2 style="color: #38bdf8;">My Profile</h2>
+    </header>
+
+    <div style="padding: 20px; margin-bottom: 80px;">
+        <div class="wallet-card" style="text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 80px; border: 3px solid #38bdf8; border-radius: 50%;">
+            <h2 id="profName" style="margin-top: 10px;">Loading...</h2>
+            <p id="profEmail" style="color: #94a3b8; font-size: 0.8rem;">---</p>
+        </div>
+
+        <div class="card secondary-card" style="padding: 0; overflow: hidden;">
+            <div style="padding: 15px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between;">
+                <span>User ID</span>
+                <span id="profUID" style="color: #38bdf8;">####</span>
+            </div>
+            <div style="padding: 15px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between;">
+                <span>WhatsApp</span>
+                <span id="profWA">---</span>
+            </div>
+            <div style="padding: 15px; display: flex; justify-content: space-between;">
+                <span>Status</span>
+                <span id="profStatus" style="color: #fbbf24;">Checking...</span>
+            </div>
+        </div>
+
+        <button class="main-btn" onclick="contactSupport()" style="margin-top: 20px; background: #25d366; color: white;">
+            <i class="fab fa-whatsapp"></i> Contact Support
+        </button>
+
+        <button class="main-btn" id="profLogout" style="margin-top: 10px; background: #f87171; color: white;">
+            <i class="fas fa-sign-out-alt"></i> Logout Account
+        </button>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="plans.html" class="nav-item"><i class="fas fa-gem"></i><span>Plans</span></a>
+        <a href="deposit.html" class="nav-item"><i class="fas fa-wallet"></i><span>Deposit</span></a>
+        <a href="team.html" class="nav-item"><i class="fas fa-users"></i><span>Team</span></a>
+        <a href="profile.html" class="nav-item active"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <script type="module">
+        import { auth, db } from './config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                onValue(ref(db, 'users/' + user.uid), (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        document.getElementById('profName').innerText = data.username || "User";
+                        document.getElementById('profEmail').innerText = data.email || "---";
+                        document.getElementById('profUID').innerText = data.uid || "####";
+                        document.getElementById('profWA').innerText = data.whatsapp || "---";
+                        document.getElementById('profStatus').innerText = data.status || 'Inactive';
+                    }
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Best way to handle WhatsApp redirect to avoid TrebEdit errors
+        window.contactSupport = () => {
+            const waNumber = "923067342115"; 
+            const message = "Hello MetaMint Support, I need help with my account.";
+            const whatsappURL = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodeURIComponent(message)}`;
+            
+            // Try opening in new window first, which is cleaner
+            const newWindow = window.open(whatsappURL, '_blank');
+            if(!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                 // Fallback if browser blocks popups
+                 window.location.href = whatsappURL;
+            }
+        }
+
+        document.getElementById('profLogout').addEventListener('click', () => {
+             Swal.fire({
+                title: 'Logout?',
+                text: "Do you want to exit?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Sign Out'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    signOut(auth).then(() => window.location.href = 'index.html');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

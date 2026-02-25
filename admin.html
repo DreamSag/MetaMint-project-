@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MetaMint | Master Admin Panel</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { 
+            --primary: #ef4444; 
+            --secondary: #38bdf8;
+            --bg: #0f172a; 
+            --card: #1e293b; 
+            --text: #f8fafc;
+            --green: #22c55e;
+            --yellow: #fcd34d;
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 15px; 
+            line-height: 1.5;
+        }
+
+        /* Header Area */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--primary); 
+            margin-bottom: 20px; 
+        }
+        .header h2 { margin: 0; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        /* Search Box */
+        .search-box { 
+            display: flex; 
+            gap: 10px; 
+            background: var(--card); 
+            padding: 12px; 
+            border-radius: 12px; 
+            margin-bottom: 25px; 
+            border: 1px solid #334155;
+        }
+        .search-box input { 
+            flex: 1; 
+            background: #0f172a; 
+            border: 1px solid #334155; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            outline: none; 
+        }
+        .btn-search { background: var(--primary); border: none; color: white; padding: 0 20px; border-radius: 8px; cursor: pointer; }
+
+        /* Section Titles */
+        .section-title { 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            color: var(--primary); 
+            font-weight: 800; 
+            margin: 25px 0 12px; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            letter-spacing: 1px;
+        }
+        
+        /* Request Cards (Deposits/Withdrawals) */
+        .req-card { 
+            background: var(--card); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border: 1px solid #334155;
+        }
+        .req-info b { font-size: 1.1rem; }
+        .req-info small { color: #94a3b8; display: block; margin-top: 2px; }
+
+        /* User List Cards */
+        .user-card { 
+            background: var(--card); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            border: 1px solid #334155; 
+        }
+        .user-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .user-details { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; border-top: 1px solid #334155; padding-top: 8px; }
+        .user-details span { color: var(--secondary); font-weight: bold; }
+        .user-details .reward-val { color: var(--yellow); }
+        
+        .status-badge { 
+            font-size: 10px; 
+            padding: 2px 8px; 
+            border-radius: 50px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+        }
+        .status-active { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+        .status-blocked { background: rgba(239, 68, 68, 0.2); color: var(--primary); }
+
+        /* Buttons */
+        .btn { padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 13px; }
+        .btn-approve { background: var(--green); color: white; }
+        .btn-reject { background: #334155; color: white; }
+        .btn-manage { background: var(--secondary); color: white; }
+
+        /* Modal Overrides */
+        .swal2-popup { border-radius: 15px !important; background: #1e293b !important; color: white !important; width: 95% !important; }
+        .swal2-input { background: #0f172a !important; color: white !important; border: 1px solid #475569 !important; font-size: 15px !important; }
+        .swal2-title { font-size: 1.2rem !important; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h2><i class="fas fa-user-shield"></i> MASTER CONTROL</h2>
+        <a href="dashboard.html" style="color:white;"><i class="fas fa-sign-out-alt fa-lg"></i></a>
+    </header>
+
+    <div class="search-box">
+        <input type="number" id="uidSearch" placeholder="Search by UID (e.g. 4446)">
+        <button class="btn-search" onclick="searchUser()"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="section-title"><i class="fas fa-file-invoice-dollar"></i> Pending Deposits</div>
+    <div id="depositList">
+        <div style="text-align:center; padding:20px; color:#64748b;">Loading deposits...</div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-hand-holding-usd"></i> Pending Withdrawals</div>
+    <div id="withdrawList">
+        <div style="text-align:center; padding:20px; color:#64748b;">Loading withdrawals...</div>
+    </div>
+
+    <div class="section-title"><i class="fas fa-users-cog"></i> User Management (A-Z)</div>
+    <div id="userList">
+        <div style="text-align:center; padding:20px; color:#64748b;">Connecting to database...</div>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+
+</body>
+</html>

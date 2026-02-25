@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMint | Notifications</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dash-body">
+
+    <header class="dash-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <i class="fas fa-arrow-left" onclick="window.location.href='dashboard.html'" style="cursor: pointer;"></i>
+            <h2 style="color: #38bdf8;">Notifications</h2>
+        </div>
+    </header>
+
+    <div id="notifList" style="padding: 20px; margin-bottom: 80px;">
+        </div>
+
+    <script type="module">
+        import { auth, db } from './config.js';
+        import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const notifList = document.getElementById('notifList');
+
+        // Fetch Global Notifications + System Alerts
+        onValue(ref(db, 'notifications'), (snapshot) => {
+            let html = '';
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                Object.values(data).reverse().forEach(notif => {
+                    html += `
+                    <div class="card secondary-card" style="border-left: 4px solid #38bdf8; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <h4 style="font-size: 0.95rem; color: #38bdf8;">${notif.title}</h4>
+                            <small style="font-size: 0.6rem; color: #64748b;">${new Date(notif.time).toLocaleDateString()}</small>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 8px; line-height: 1.4;">${notif.message}</p>
+                    </div>`;
+                });
+                notifList.innerHTML = html;
+            } else {
+                notifList.innerHTML = '<p style="text-align:center; color:#94a3b8; margin-top:50px;">No new notifications</p>';
+            }
+        });
+    </script>
+</body>
+</html>
